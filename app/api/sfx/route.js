@@ -53,7 +53,9 @@ export async function POST(req) {
   }
 
   const buffer = Buffer.from(await res.arrayBuffer());
-  const stored = await storeAudioBytes(slot + '.mp3', buffer, 'audio/mpeg');
+  let stored;
+  try { stored = await storeAudioBytes(slot + '.mp3', buffer, 'audio/mpeg'); }
+  catch (e) { return NextResponse.json({ error: 'storage-failed', detail: String((e && e.message) || e), hasBlob: !!process.env.BLOB_READ_WRITE_TOKEN }, { status: 500 }); }
 
   const audios = await getAudios();
   const prev = audios[slot];

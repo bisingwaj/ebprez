@@ -17,15 +17,20 @@ function key() { return process.env.ELEVENLABS_API_KEY || ''; }
 export async function GET(req) {
   if (!checkAdmin(req)) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   const hasKey = !!key();
-  if (!hasKey) return NextResponse.json({ hasKey: false, voices: FALLBACK_VOICES, defaultVoice: DEFAULT_VOICE_ID });
+  // diagnostics: which integrations are wired in this deployment
+  const diag = {
+    hasBlob: !!process.env.BLOB_READ_WRITE_TOKEN,
+    hasKV: !!((process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL) && (process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN)),
+  };
+  if (!hasKey) return NextResponse.json({ hasKey: false, ...diag, voices: FALLBACK_VOICES, defaultVoice: DEFAULT_VOICE_ID });
   try {
     const res = await fetch(EL_BASE + '/voices', { headers: { 'xi-api-key': key() }, cache: 'no-store' });
     if (!res.ok) throw new Error('voices-fetch-failed');
     const data = await res.json();
     const voices = (data.voices || []).map((v) => ({ voice_id: v.voice_id, name: v.name + (v.labels && v.labels.gender ? ' (' + v.labels.gender + ')' : '') }));
-    return NextResponse.json({ hasKey: true, voices: voices.length ? voices : FALLBACK_VOICES, defaultVoice: DEFAULT_VOICE_ID });
+    return NextResponse.json({ hasKey: true, ...diag, voices: voices.length ? voices : FALLBACK_VOICES, defaultVoice: DEFAULT_VOICE_ID });
   } catch (e) {
-    return NextResponse.json({ hasKey: true, voices: FALLBACK_VOICES, defaultVoice: DEFAULT_VOICE_ID });
+    return NextResponse.json({ hasKey: true, ...diag, voices: FALLBACK_VOICES, defaultVoice: DEFAULT_VOICE_ID });
   }
 }
 
@@ -72,7 +77,9 @@ export async function POST(req) {
   }
 
   const buffer = Buffer.from(await res.arrayBuffer());
-  const stored = await storeAudioBytes(slot + '.mp3', buffer, 'audio/mpeg');
+  let stored;
+  try { stored = await storeAudioBytes(slot + '.mp3', buffer, 'audio/mpeg'); }
+  catch (e) { return NextResponse.json({ error: 'storage-failed', detail: String((e && e.message) || e), hasBlob: !!process.env.BLOB_READ_WRITE_TOKEN }, { status: 500 }); }
 
   const audios = await getAudios();
   const prev = audios[slot];
