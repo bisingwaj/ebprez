@@ -1,0 +1,40 @@
+/* Étoile Bleue — global styles + keyframes ported from the original Etoile Bleue.dc.html */
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+html, body { margin: 0; padding: 0; background: #03070f; overflow: hidden; height: 100%; }
+* { box-sizing: border-box; }
+
+@keyframes ebRise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+@keyframes ebBreathe { 0%,100% { opacity: .5; } 50% { opacity: 1; } }
+@keyframes ebSpin { to { transform: rotate(360deg); } }
+@keyframes ebSpinR { to { transform: rotate(-360deg); } }
+@keyframes ebDash { to { stroke-dashoffset: 0; } }
+@keyframes ebScan { 0% { transform: translateY(-120%); } 100% { transform: translateY(820%); } }
+@keyframes ebBlink { 0%,100% { opacity: .25; } 50% { opacity: 1; } }
+@keyframes ebGrid { from { background-position: 0 0; } to { background-position: 0 64px; } }
+@keyframes ebRing { 0% { transform: translate(-50%,-50%) scale(.15); opacity: .85; } 100% { transform: translate(-50%,-50%) scale(2.4); opacity: 0; } }
+@keyframes ebFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+@keyframes ebCount { 0% { opacity: 0; transform: scale(1.7); filter: blur(6px); } 24% { opacity: 1; transform: scale(1); filter: blur(0); } 100% { opacity: .92; transform: scale(.98); } }
+@keyframes ebBigIn { 0% { opacity: 0; transform: scale(.84); letter-spacing: .5em; } 100% { opacity: 1; transform: scale(1); letter-spacing: .06em; } }
+@keyframes ebFlash { 0% { opacity: 0; } 8% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes ebShake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-9px); } 40% { transform: translateX(8px); } 60% { transform: translateX(-6px); } 80% { transform: translateX(5px); } }
+@keyframes ebPulse { 0% { box-shadow: 0 0 0 0 rgba(56,225,255,.45); } 100% { box-shadow: 0 0 0 22px rgba(56,225,255,0); } }
+@keyframes ebStream { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
+
+/* keypad hover (replaces the runtime's style-hover attribute) */
+.eb-key { transition: all .12s; }
+.eb-key:hover { background: rgba(56,225,255,.16) !important; border-color: #38e1ff !important; box-shadow: 0 0 16px rgba(56,225,255,.4); }
+.eb-key.eb-key-ok:hover { background: rgba(31,143,255,.4) !important; }
+
+/* projection: hide the cursor */
+.eb-projection { cursor: none; }
+
+/* President activation button */
+@keyframes ebActivateGlow {
+  0%,100% { box-shadow: 0 0 40px rgba(25,224,138,.5), 0 0 90px rgba(56,225,255,.25), inset 0 0 30px rgba(25,224,138,.25); }
+  50% { box-shadow: 0 0 72px rgba(25,224,138,.85), 0 0 150px rgba(56,225,255,.5), inset 0 0 44px rgba(25,224,138,.4); }
+}
+.eb-activate { transition: transform .15s ease; animation: ebActivateGlow 2s ease-in-out infinite; }
+.eb-activate:hover { transform: scale(1.05); }
+.eb-activate:active { transform: scale(.96); }
+.eb-activate:disabled { animation: none; opacity: .7; cursor: default; }

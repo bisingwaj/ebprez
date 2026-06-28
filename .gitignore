@@ -1,0 +1,13 @@
+/node_modules
+/.next
+/out
+.env*.local
+.DS_Store
+*.log
+.vercel
+
+# local dev store
+.eb-store.json
+
+# dev audio artifacts (regenerated in prod via Blob)
+public/uploads/
